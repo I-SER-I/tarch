@@ -163,15 +163,16 @@ public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgori
 
         public void Encode(Stream input, Stream output)
         {
-            var freq = new Dictionary<byte, int>();
-            int b;
-            while ((b = input.ReadByte()) != -1)
+            var frequencyTable = new Dictionary<byte, int>();
+            int @byte;
+            while ((@byte = input.ReadByte()) != Constants.EndOfStream)
             {
-                byte bb = (byte)b;
-                freq[bb] = freq.TryGetValue(bb, out var f) ? f + 1 : 1;
+                var byteSymbol = (byte)@byte;
+                frequencyTable[byteSymbol] =
+                    frequencyTable.TryGetValue(byteSymbol, out var frequency) ? frequency + 1 : 1;
             }
 
-            var root = BuildTree(freq);
+            var root = BuildTree(frequencyTable);
             var codes = BuildCodes(root);
 
             input.Position = 0;
@@ -179,13 +180,13 @@ public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgori
             WriteTree(writer, root);
             writer.Write((int)input.Length);
 
-            var bw = new BitWriter(writer.BaseStream);
-            while ((b = input.ReadByte()) != -1)
+            var bitWriter = new BitWriter(writer.BaseStream);
+            while ((@byte = input.ReadByte()) != Constants.EndOfStream)
             {
-                bw.WriteBits(codes[(byte)b]);
+                bitWriter.WriteBits(codes[(byte)@byte]);
             }
 
-            bw.Flush();
+            bitWriter.Flush();
         }
 
         public void Decode(Stream input, Stream output)
@@ -194,7 +195,7 @@ public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgori
             var root = ReadTree(reader);
             var length = reader.ReadInt32();
 
-            var br = new BitReader(input);
+            var bitReader = new BitReader(input);
             var count = 0;
             var node = root;
 
@@ -202,7 +203,7 @@ public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgori
             {
                 while (!node.IsLeaf)
                 {
-                    node = br.ReadBit() ? node.Right! : node.Left!;
+                    node = bitReader.ReadBit() ? node.Right! : node.Left!;
                 }
 
                 output.WriteByte(node.Value!.Value);
@@ -211,34 +212,37 @@ public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgori
             }
         }
 
-        private static Node BuildTree(Dictionary<byte, int> freq)
+        private static Node BuildTree(IDictionary<byte, int> frequencyTable)
         {
-            var pq = new PriorityQueue<Node, int>();
-            foreach (var kv in freq)
+            var queue = new PriorityQueue<Node, int>();
+            foreach (var (byteSymbol, frequency) in frequencyTable)
             {
-                pq.Enqueue(new Node { Value = kv.Key, Frequency = kv.Value }, kv.Value);
+                queue.Enqueue(new Node { Value = byteSymbol, Frequency = frequency }, frequency);
             }
 
-            while (pq.Count > 1)
+            while (queue.Count > 1)
             {
-                var l = pq.Dequeue();
-                var r = pq.Dequeue();
-                var parent = new Node { Left = l, Right = r, Frequency = l.Frequency + r.Frequency };
-                pq.Enqueue(parent, parent.Frequency);
+                var leftNode = queue.Dequeue();
+                var rightNode = queue.Dequeue();
+                var parent = new Node
+                {
+                    Left = leftNode, Right = rightNode, Frequency = leftNode.Frequency + rightNode.Frequency
+                };
+                queue.Enqueue(parent, parent.Frequency);
             }
 
-            return pq.Dequeue();
+            return queue.Dequeue();
         }
 
         private static Dictionary<byte, List<bool>> BuildCodes(Node root)
         {
-            var dict = new Dictionary<byte, List<bool>>();
+            var codeTable = new Dictionary<byte, List<bool>>();
 
             void Traverse(Node node, List<bool> path)
             {
                 if (node.IsLeaf)
                 {
-                    dict[node.Value!.Value] = new(path);
+                    codeTable[node.Value!.Value] = new(path);
                     return;
                 }
 
@@ -251,7 +255,7 @@ public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgori
             }
 
             Traverse(root, []);
-            return dict;
+            return codeTable;
         }
 
         private static void WriteTree(BinaryWriter writer, Node node)
