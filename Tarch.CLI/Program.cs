@@ -2,9 +2,15 @@
 
 app.Configure(config =>
 {
-    config.SetApplicationName("simplearch");
-    config.AddCommand<EncodeCommand>("encode").WithDescription("Архивировать файлы");
-    config.AddCommand<DecodeCommand>("decode").WithDescription("Распаковать архив");
+    config
+        .SetApplicationName("tarch")
+        .AddCommand<EncodeCommand>("encode")
+        .WithDescription("Encode file");
+
+    config
+        .SetApplicationName("tarch")
+        .AddCommand<DecodeCommand>("decode")
+        .WithDescription("Decode file");
 });
 
 return app.Run(args);

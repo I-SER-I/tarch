@@ -1,4 +1,4 @@
-﻿namespace Itmo.Fitp.Is.Tarch.Core;
+﻿namespace Itmo.Fitp.Is.Tarch.Core.Interfaces;
 
 public interface IAlgorithm
 {

@@ -5,11 +5,11 @@ public sealed class DecodeCommand : Command<DecodeSettings>
 {
     public override int Execute(CommandContext context, DecodeSettings settings)
     {
-        var archiver = new Archiver(new ContextualHuffman());
+        var archiver = new Archiver(new BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm());
 
-        AnsiConsole.MarkupLine("[green]Распауковка нахуй...[/]");
-        archiver.DecodeArchive(settings.ArchivePath, settings.OutputDirectory);
-        AnsiConsole.MarkupLine("[green]Готово: в папке[/] " + settings.OutputDirectory);
+        AnsiConsole.MarkupLine("[green]Decoding file[/] " + settings.InputPath);
+        archiver.Decode(settings.InputPath, settings.OutputPath);
+        AnsiConsole.MarkupLine("[green]Decoded file[/] " + settings.OutputPath);
 
         return 0;
     }

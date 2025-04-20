@@ -1,43 +1,25 @@
 namespace Itmo.Fitp.Is.Tarch.Core.Utils;
 
-public sealed class BitReader
+public sealed class BitReader(Stream stream)
 {
-    private readonly Stream _stream;
-    private int _buffer;
-    private int _bitCount;
+    private int _currentByte;
+    private int _bitPosition = Constants.BitsPerByte;
 
-    public bool HasBits => _bitCount > 0 || _stream.Position < _stream.Length;
-
-    public BitReader(Stream stream)
+    public bool ReadBit()
     {
-        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        FillBuffer();
-    }
-
-    private void FillBuffer()
-    {
-        int nextByte = _stream.ReadByte();
-        if (nextByte == -1)
+        if (_bitPosition == Constants.BitsPerByte)
         {
-            _buffer = 0;
-            _bitCount = 0;
+            _currentByte = stream.ReadByte();
+            if (_currentByte == Constants.EndOfStream)
+            {
+                throw new EndOfStreamException("Unexpected end of stream while reading bits.");
+            }
+
+            _bitPosition = 0;
         }
-        else
-        {
-            _buffer = nextByte;
-            _bitCount = 8;
-        }
-    }
 
-    public int ReadBit()
-    {
-        if (_bitCount == 0)
-            FillBuffer();
-
-        if (_bitCount == 0)
-            throw new EndOfStreamException("No more bits to read.");
-
-        int bit = (_buffer >> (--_bitCount)) & 1;
+        var bit = ((_currentByte >> (7 - _bitPosition)) & 1) == 1;
+        _bitPosition++;
         return bit;
     }
 }
