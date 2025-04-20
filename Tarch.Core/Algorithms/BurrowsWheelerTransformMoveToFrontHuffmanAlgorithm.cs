@@ -1,7 +1,5 @@
 namespace Itmo.Fitp.Is.Tarch.Core.Algorithms;
 
-using Interfaces;
-
 public sealed class BurrowsWheelerTransformMoveToFrontHuffmanAlgorithm : IAlgorithm
 {
     private const int AlphabetSize = 256;

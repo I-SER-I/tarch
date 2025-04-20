@@ -1,7 +1,5 @@
 namespace Itmo.Fitp.Is.Tarch.Core;
 
-using Interfaces;
-
 public sealed class Archiver(IAlgorithm algorithm)
 {
     public void Encode(string inputPath, string outputPath)
