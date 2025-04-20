@@ -83,9 +83,11 @@
 | trans   | 5.500997 | 3.414096 | 1.946669 | 1.971644            | 93 695                 | 22 598                  |
 |**Total**|          |          |          |                     | **3 251 493**          | **1 051 836**           |
 
+[*Вычисления производились `report.ipynb`*](https://github.com/I-SER-I/tarch/blob/main/Report/report.ipynb)
+
 ## Исходный код
 
-Исходный код опубликован в репозитории [https://github.com/I-SER-I/tarch](https://github.com/I-SER-I/tarch)
+Исходный код опубликован в репозитории [I-SER-I/tarch](https://github.com/I-SER-I/tarch)
 
 - `Tarch.CLI` - консольная версия архиватора
 - `Tarch.Core` - библиотека с реализацией алгоритмов
@@ -94,7 +96,7 @@
 
 ## Исполняемые программы
 
-Исполняемые программы можно скачать из репозитория [https://github.com/I-SER-I/tarch/releases/tag/1.0](https://github.com/I-SER-I/tarch/releases/tag/1.0) соответственно для Windows (x86 и x64), Linux и MacOS (x64 и arm)
+Исполняемые программы можно скачать из репозитория в [разделе релиз](https://github.com/I-SER-I/tarch/releases/tag/1.0) соответственно для Windows (x86 и x64), Linux и MacOS (x64 и arm)
 
 ### Пример использования
 
@@ -134,6 +136,6 @@ tarch-win64.exe decode .\archive .\data.decoded.text
 ```
 
 ```txt
-Decoding file ./archive
-Decoded file ./data.decode.txt
+Decoding file archive
+Decoded file data.decode.txt
 ```
